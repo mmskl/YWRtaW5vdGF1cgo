@@ -3,6 +3,12 @@
   hosts: test_host
   gather_facts: true
   become: true
+  pre_tasks:
+    - name: Create tmp dir
+      file: name=tmp state=directory 
+    - name: Install python3-openssl
+      apt: name=python3-openssl state=present
+
   roles:
     - role: 'ssh'
       non_standard_port: 40022
@@ -24,3 +30,9 @@
           ns:
             - name: dns1.john.doe.
             - name: dns2.john.doe.
+
+    - role: adfinis-sygroup.mariadb # innodb is default storage engine
+      mariadb_ssl: true
+      mariadb_pki_path: /etc/mysql
+      mariadb_user: mysql
+      mariadb_ca_privatekey_passphrase: 'Zaq12wx'
