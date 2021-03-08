@@ -8,3 +8,19 @@
       non_standard_port: 40022
       disable_root_ssh: false
 
+    - role: 'robertdebock.dns'
+      dns_zones:
+        - name: john.doe
+          ttl: 604800
+          records:
+            - name: "nginx"
+              value: 127.0.0.1
+            - name: "apache"
+              value: 127.0.0.1
+            - name: dns1
+              value: 127.0.0.1
+            - name: dns2
+              value: 127.0.0.1
+          ns:
+            - name: dns1.john.doe.
+            - name: dns2.john.doe.
