@@ -1,0 +1,10 @@
+---
+- name: Pass recruitment task
+  hosts: test_host
+  gather_facts: true
+  become: true
+  roles:
+    - role: 'ssh'
+      non_standard_port: 40022
+      disable_root_ssh: false
+

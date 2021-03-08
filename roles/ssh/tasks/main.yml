@@ -1,0 +1,62 @@
+---
+- name: Disable empty password login
+  lineinfile: 
+    dest: "{{ sshd_config_path }}" 
+    regexp: '^#?PermitEmptyPasswords' 
+    line: 'PermitEmptyPasswords no'
+  notify: restart sshd
+
+- name: Disable remote root login
+  lineinfile: 
+    dest: "{{ sshd_config_path }}" 
+    regexp: '^#?PermitRootLogin' 
+    line: 'PermitRootLogin no'
+  notify: restart sshd
+  when: disable_root_ssh
+
+- name: Disable password login
+  lineinfile: 
+    dest: "{{ sshd_config_path }}" 
+    regexp: '^(#\s*)?PasswordAuthentication '
+    line: 'PasswordAuthentication no'
+  notify: restart sshd
+
+- name: Enable PAM
+  lineinfile: 
+    dest: "{{ sshd_config_path }}" 
+    regexp: '^#?UsePAM' 
+    line: 'UsePAM yes'
+  notify: restart sshd
+
+
+- name: Set protocol 2
+  lineinfile: 
+    dest: "{{ sshd_config_path }}" 
+    regexp: '^#?Protocol' 
+    line: 'Protocol 2'
+  notify: restart sshd
+
+
+
+- name: Set non standard port
+  lineinfile: 
+    dest: "{{ sshd_config_path }}" 
+    regexp: '^#?X11Forwarding' 
+    line: 'X11Forwarding no'
+  notify: restart sshd
+
+
+- name: Set non standard port
+  lineinfile: 
+    dest: "{{ sshd_config_path }}" 
+    regexp: '^#?ClientAliveInterval' 
+    line: 'ClientAliveInterval 300'
+  notify: restart sshd
+
+
+- name: Set non standard port
+  lineinfile: 
+    dest: "{{ sshd_config_path }}" 
+    regexp: '^#?Port' 
+    line: 'Port {{ non_standard_port }}'
+  notify: restart sshd
