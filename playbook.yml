@@ -1,5 +1,5 @@
 ---
-- name: Pass recruitment task
+- name: Recruitment task
   hosts: test_host
   gather_facts: true
   become: true
@@ -36,3 +36,12 @@
       mariadb_pki_path: /etc/mysql
       mariadb_user: mysql
       mariadb_ca_privatekey_passphrase: 'Zaq12wx'
+
+    - role: 'php'
+      php_version: "7.3"
+
+    - role: 'custom_apache'
+
+    - role: 'custom_nginx'
+
+    - role: 'vhosts'
