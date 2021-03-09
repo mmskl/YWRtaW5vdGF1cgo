@@ -1,0 +1,29 @@
+---
+- name: "Install apache"
+  apt: name=apache2 state=present
+
+- name: Change default apache 80 port
+  lineinfile: 
+    dest: "/etc/apache2/ports.conf" 
+    regexp: '^\s?Listen 80' 
+    line: 'Listen 40080'
+
+- name: Change default apache 443 port
+  replace: 
+    path: "/etc/apache2/ports.conf" 
+    regexp: '^\s?Listen 443' 
+    replace: 'Listen 40443'
+
+- name: "Remove default apache's vhost"
+  file: name=/etc/apache2/sites-enabled/000-default.conf state=absent
+
+
+- name: "Enable apache modules for php-fpm "
+  command: "a2enmod {{ item }}"
+  with_items:
+    - alias 
+    - proxy 
+    - proxy_fcgi
+
+- name: "Retart and enable apache"
+  service: name=apache2 state=restarted enabled=true
