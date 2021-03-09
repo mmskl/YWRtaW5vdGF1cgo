@@ -1,0 +1,6 @@
+nginx_conf_path: /etc/nginx
+
+proxy_buffers_s: "256"
+proxy_buffers_c: "16k"
+proxy_read_timeout: "600s"
+proxy_http_version: "1.1"
