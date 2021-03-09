@@ -1,0 +1,8 @@
+---
+- name: Include wordpress tasks
+  include_tasks: 'nginx_john_doe.yml'
+
+- name: include apache.john.doe vhost tasks
+  include_tasks: 'apache_john_doe.yml'
+
+
