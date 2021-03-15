@@ -1,0 +1,6 @@
+ports:
+  http: 80
+  http: 443
+
+vhost_root: '/var/www'
+apache_conf_path: '/etc/apache2'

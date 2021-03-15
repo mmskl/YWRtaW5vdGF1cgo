@@ -1,0 +1,13 @@
+<VirtualHost {{ vhost.listen_on }}>
+    ServerName {{ vhost.domain }}
+    DocumentRoot /var/www/{{ vhost.domain }}/public_html
+    ErrorLog /var/www/{{ vhost.domain }}/logs/error.log
+
+    <FilesMatch \.php$>
+        SetHandler "proxy:fcgi://127.0.0.1:9000"
+    </FilesMatch>
+
+</VirtualHost>
+
+
+
