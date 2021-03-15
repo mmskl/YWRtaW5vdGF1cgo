@@ -1,0 +1,20 @@
+- name: Get domain without dots and special characters
+  set_fact:
+   nice_name: "{{ item.domain | regex_findall('\\w+') | join('_') }}"
+
+
+- name: Add reverse proxy conf
+  template:
+    src: reverse_proxy.conf
+    dest: "{{ nginx_conf_path }}/sites-available/{{ item.domain }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: Enable reverse proxy conf
+  file:
+    src: "{{ nginx_conf_path }}/sites-available/{{ item.domain }}.conf"
+    dest: "{{ nginx_conf_path }}/sites-enabled/{{ item.domain }}.conf"
+    state: link
+  notify: restart nginx

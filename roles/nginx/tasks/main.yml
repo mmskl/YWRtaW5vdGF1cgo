@@ -1,0 +1,17 @@
+- name: install nginx
+  apt: name=nginx
+
+- name: Remove default vhost
+  file:
+    path: "{{ nginx_conf_path }}/sites-enabled/default"
+    state: absent
+
+
+- include_tasks: reverse_proxy.yml
+  with_items: "{{ reverse_proxies }}"
+  loop_control:
+    loop_var: item
+
+
+- service: name=nginx state=restarted
+
