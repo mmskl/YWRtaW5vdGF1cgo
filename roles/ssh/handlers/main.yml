@@ -1,4 +1,4 @@
 ---
 - name: restart sshd
   # service: name={{ service_name }} state=restarted # commented out for test purposes (main docker process)
-  service: name={{ service_name }} state=reloaded
+  service: name={{ ssh_service_name }} state=reloaded

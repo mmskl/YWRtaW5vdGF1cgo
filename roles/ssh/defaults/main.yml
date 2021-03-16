@@ -2,4 +2,4 @@
 non_standard_port: 22
 disable_root_ssh: false
 sshd_config_path: /etc/ssh/sshd_config
-service_name: ssh
+ssh_service_name: ssh
