@@ -1,0 +1,53 @@
+---
+
+- name: "Install required packages"
+  apt: name="rsync" state=present
+
+- name: Download and unpack latest WordPress
+  unarchive:
+    src: https://wordpress.org/latest.tar.gz
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Make sure parent directores exists
+  command: mkdir -p "{{ wordpress_path }}/.."
+
+- name: Move wordpress
+  synchronize:
+    src: /tmp/wordpress/
+    dest: "{{ wordpress_path }}/"
+  delegate_to: "{{ inventory_hostname }}"
+
+
+# - name: Set ownership
+#   file:
+#     path: "{{ wordpress_path }}"
+#     state: directory
+#     owner: "{{ directory_owner }}}"
+#     group: "{{ directory_owner }}}"
+
+- name: Set ownership
+  shell: "chown -R \"{{ directory_owner }}:{{ directory_owner }}\" \"{{ wordpress_path }}\""
+
+
+- name: Set permissions for directories
+  shell: "/usr/bin/find \"{{ wordpress_path }}\" -type d -exec chmod 750 {} \\;"
+
+- name: Set permissions for files
+  shell: "/usr/bin/find \"{{ wordpress_path }}\" -type f -exec chmod 640 {} \\;"
+
+- name: Copy sample config file
+  command: mv "{{ wordpress_path }}/wp-config-sample.php" "{{ wordpress_path }}/wp-config.php"
+  args: creates={{ wordpress_path }}/wp-config.php
+  become: yes
+
+- name: Update WordPress config file
+  lineinfile:
+    path: "{{ wordpress_path }}/wp-config.php"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - {'regexp': "define\\( 'DB_NAME', '(.)+' \\);", 'line': "define( 'DB_NAME', '{{db_name}}' );"}
+    - {'regexp': "define\\( 'DB_USER', '(.)+' \\);", 'line': "define( 'DB_USER', '{{db_user}}' );"}
+    - {'regexp': "define\\( 'DB_PASSWORD', '(.)+' \\);", 'line': "define( 'DB_PASSWORD', '{{db_password}}' );"}
+ 

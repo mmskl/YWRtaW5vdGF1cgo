@@ -1,0 +1,6 @@
+wordpress_path: '/var/www/html'
+directory_owner: 'www-data'
+
+db_name: ''
+db_user: ''
+db_password: ''
