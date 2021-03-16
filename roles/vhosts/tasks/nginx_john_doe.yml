@@ -1,0 +1,14 @@
+- name: Create directory for vhost
+  file:
+    name: "{{ item }}"
+    state: directory 
+    owner: www-data
+    mode: 0750
+    recurse: true
+  with_items:
+    - "/var/www/apache.john.doe"
+    - "/var/www/apache.john.doe/public_html"
+    - "/var/www/apache.john.doe/logs"
+
+
+http://wp-quick-install.com/download/

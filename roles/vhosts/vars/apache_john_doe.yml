@@ -1,3 +1,0 @@
-servername: apache.john.doe
-port: 40080
-vhost_root: /var/www/apache.john.doe
