@@ -1,22 +1,26 @@
 #!/usr/bin/bash
 
-# templorary set local dns resolver as default one (it doesn't forward requests)
-ssh -i rsa_key ansible@127.0.0.1 -p22022 "sudo bash -c 'echo \" nameserver 127.0.0.1\" > /etc/resolv.conf'"
-
 echo '
 echo " - check if nginx.john.doe returns localhost"
 dig +short nginx.john.doe | grep -q 127.0.0.1 && echo OK || echo NOTOK!
 
 echo " - check if apache.john.doe returns localhost"
-dig +short apache.john.doe
+dig +short apache.john.doe && echo OK || echo NOTOK!
 
 echo " - check if apache.john.doe has phpinfo() in title"
-curl http://apache.john.doe 2>/dev/null | grep "<title>" | grep -q "phpinfo\(\)" && echo OK || echo NOTOK!
+curl http://apache.john.doe 2>/dev/null | grep "<title>" | grep -q phpinfo\(\) && echo OK || echo NOTOK!
 
-echo " - check if nginx.john.doe/wp-admin/ has <h1>Welcome</h1>"
-curl -L http://nginx.john.doe/wp-admin/ 2>/dev/null | grep -q "<h1>Welcome</h1>" && echo OK || echo NOTOK!
-' | ssh -i rsa_key ansible@127.0.0.1 -p22022 "cat > test.sh"
+echo " - check if php-fpm runs on port 9000"
+netstat -tln | grep -q :9000 && echo OK || echo NOTOK!
+
+echo " - check if mariadb runs on port 3306"
+netstat -tln | grep -q :3306 && echo OK || echo NOTOK!
+
+echo " - check nginx.john.doe/wp-admin/"
+curl -L http://nginx.john.doe/wp-admin/ 2>/dev/null | grep "<title>" | grep -q Installation && echo OK || echo NOTOK!
+' > testscript.sh
 
 
-
-ssh -i rsa_key ansible@127.0.0.1 -p22022 "bash ./test.sh"
+docker cp testscript.sh debian10:/
+docker exec -it debian10 sudo bash /testscript.sh
+rm testscript.sh
