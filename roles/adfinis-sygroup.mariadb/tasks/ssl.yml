@@ -50,14 +50,14 @@
     type: RSA
     cipher: aes256
     size: 4096
-    passphrase: passphrase
+    passphrase: "{{ mariadb_ca_privatekey_passphrase }}"
 
 - name: create mariadb ssl certificate signing request
   openssl_csr:
     path: '{{ mariadb_pki_path }}/server.csr'
     common_name: '{{ ansible_fqdn }}'
     privatekey_path: '{{ mariadb_pki_path }}/server.key'
-    privatekey_passphrase: passphrase
+    privatekey_passphrase: "{{ mariadb_ca_privatekey_passphrase }}"
 
 - name: fetch mariadb ssl certificate signing request
   fetch:
@@ -68,28 +68,14 @@
 
 - name: sign mariadb ssl certificate signing request
   openssl_certificate:
-    path: 'tmp/mariadb_{{ ansible_fqdn }}.pem'
+    path: '{{ mariadb_pki_path }}/server.csr'
     privatekey_path: 'tmp/mariadb_ssl_ca.key'
-    csr_path: 'tmp/mariadb_{{ ansible_fqdn }}.csr'
+    csr_path: '{{ mariadb_pki_path }}/server.csr'
     provider: selfsigned
-  # delegate_to: localhost
+    privatekey_passphrase: '{{ mariadb_ca_privatekey_passphrase }}'
   delegate_to: "{{ inventory_hostname }}"
   register: mariadb_register_pem
   tags:
     - skip_ansible_lint
   when: mariadb_register_csr.changed
 
-- name: put the mariadb ssl certificate to the server
-  copy:
-    src: 'tmp/mariadb_{{ ansible_fqdn }}.pem'
-    dest: '{{ mariadb_pki_path }}/server.pem'
-    owner: root
-    group: root
-    mode: 0644
-    seuser: system_u
-    serole: object_r
-    setype: cert_t
-    selevel: s0
-  tags:
-    - skip_ansible_lint
-  when: mariadb_register_pem.changed
