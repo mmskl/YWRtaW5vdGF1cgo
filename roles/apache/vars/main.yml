@@ -4,3 +4,4 @@ ports:
 
 vhost_root: '/var/www'
 apache_conf_path: '/etc/apache2'
+service_name: 'apache2'
