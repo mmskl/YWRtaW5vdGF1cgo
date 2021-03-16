@@ -48,7 +48,7 @@
       mariadb_user: mysql
       mariadb_ca_privatekey_passphrase: 'Zaq12wx'
       mariadb_databases:
-        name: wordpress
+        - name: wordpress
       mariadb_users:    # IN THE FUTURE PLEASE USE ANSIBLE VAULT
         - name: wordpress
           host: localhost
