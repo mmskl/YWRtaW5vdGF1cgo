@@ -13,6 +13,3 @@ docker exec debian10 mkdir -p /home/ansible/.ssh
 docker cp rsa_key.pub debian10:/home/ansible/.ssh/authorized_keys
 docker exec debian10 chmod 600 /home/ansible/.ssh/authorized_keys
 docker exec debian10 chown ansible:ansible /home/ansible/.ssh/authorized_keys
-
-# ansible-galaxy install robertdebock.dns
-# ansible-playbook -f playbook.yml
