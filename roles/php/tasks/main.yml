@@ -1,7 +1,7 @@
 
-- name: Install php-fpm
+- name: Install php with php-fpm
   apt:
-    name: "php{{ php_version }}-fpm"
+    name: [ "php{{ php_version }}-fpm", "php{{ php_version }}",  "php7.3-mysql"]
     state: present
 
 - name: start service
@@ -13,8 +13,10 @@
 - name: listen php-fpm on host
   lineinfile: 
     dest: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf" 
-    regexp: '^listen' 
+    regexp: '^listen = ' 
     line: 'listen = 127.0.0.1:9000'
+  notify: restart php-fpm
+
 
 
 
