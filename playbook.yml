@@ -6,14 +6,18 @@
   pre_tasks:
     - name: Create tmp dir
       file: name=tmp state=directory 
-    - name: Install python3-openssl
-      apt: name=python3-openssl state=present
+    - name: Install basic dependencies
+      apt:
+        name: ["ca-certificates", "openssl", "python3-mysqldb", "python3-openssl", "net-tools", "dnsutils", "curl"]
+        state: present
+
 
   roles:
     - role: 'ssh'
       non_standard_port: 40022
       disable_root_ssh: false
 
+      # source https://github.com/robertdebock/ansible-role-dns
     - role: 'robertdebock.dns'
       dns_zones:
         - name: john.doe
@@ -31,17 +35,53 @@
             - name: dns1.john.doe.
             - name: dns2.john.doe.
 
+      # fork of https://github.com/adfinis-sygroup/ansible-role-mariadb
     - role: adfinis-sygroup.mariadb # innodb is default storage engine
       mariadb_ssl: true
       mariadb_pki_path: /etc/mysql
       mariadb_user: mysql
       mariadb_ca_privatekey_passphrase: 'Zaq12wx'
+      mariadb_users:    # IN THE FUTURE PLEASE USE ANSIBLE VAULT
+        - name: wordpress
+          host: localhost
+          password: fixme
+          priv: 'wordpress.*:ALL'
 
     - role: 'php'
       php_version: "7.3"
 
-    - role: 'custom_apache'
+    - role: 'apache'
+      ports:
+        http: 40080
+        https: 40443
+      vhosts:
+        - domain: apache.john.doe
+          listen_on: 127.0.0.1:40080
+        - domain: nginx.john.doe
+          listen_on: 127.0.0.1:40080
 
-    - role: 'custom_nginx'
 
-    - role: 'vhosts'
+    - role: 'nginx'
+      reverse_proxies:
+        - domain: _ # default
+          upstream_servers: ['127.0.0.1:40080']
+          port: 80
+      vhosts: []
+
+    - role: 'wordpress'
+      wordpress_path: '/var/www/nginx.john.doe/public_html'
+      directory_owner: 'www-data'
+      # IN THE FUTURE PLEASE USE ANSIBLE VAULT
+      db_name: wordpress
+      db_user: wordpress
+      db_password: fixme
+
+  ################
+
+  post_tasks:
+    - name: Add phpinfo to apache.john.doe vhost
+      shell:
+        cmd: 'echo "<?php\n phpinfo();" > /var/www/apache.john.doe/public_html/index.php'
+
+
+
