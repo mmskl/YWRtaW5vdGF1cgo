@@ -19,7 +19,8 @@
     cipher: aes256
     size: 4096
     passphrase: '{{ mariadb_ca_privatekey_passphrase }}'
-  delegate_to: localhost
+  # delegate_to: localhost
+  delegate_to: "{{ inventory_hostname }}"
 
 - name: create mariadb ssl ca public key
   openssl_publickey:
@@ -27,7 +28,8 @@
     format: PEM
     privatekey_path: tmp/mariadb_ssl_ca.key
     privatekey_passphrase: '{{ mariadb_ca_privatekey_passphrase }}'
-  delegate_to: localhost
+  # delegate_to: localhost
+  delegate_to: "{{ inventory_hostname }}"
 
 - name: put the mariadb ssl ca public key to the server
   copy:
@@ -71,6 +73,7 @@
     csr_path: 'tmp/mariadb_{{ ansible_fqdn }}.csr'
     provider: selfsigned
   # delegate_to: localhost
+  delegate_to: "{{ inventory_hostname }}"
   register: mariadb_register_pem
   tags:
     - skip_ansible_lint
